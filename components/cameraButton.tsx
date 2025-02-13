@@ -1,8 +1,9 @@
 "use client"
 
-import { Camera, CameraResultType } from "@capacitor/camera"
-
+import { Camera, CameraResultType } from "@capacitor/camera";
+import useImageStore from "@/app/stores/imageStore";
 const CameraButton = () => {
+    const setBase64Image = useImageStore((state: any) => state.setBase64Image);
     const takePhoto = async () => {
         try {
             const photo = await Camera.getPhoto({
@@ -12,6 +13,8 @@ const CameraButton = () => {
             })
 
             alert(`Photo taken: ${photo.webPath}`)
+            setBase64Image(photo.base64String);
+            
         } catch (error) {
             console.error("Camera error:", error);
             

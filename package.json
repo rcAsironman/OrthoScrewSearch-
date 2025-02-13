@@ -14,9 +14,12 @@
     "@capacitor/cli": "^7.0.1",
     "@capacitor/core": "^7.0.1",
     "@capacitor/ios": "^7.0.1",
+    "@xenova/transformers": "^2.17.2",
+    "axios": "^1.7.9",
     "next": "^14.2.23",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
