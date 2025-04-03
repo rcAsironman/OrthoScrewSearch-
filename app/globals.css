@@ -7,6 +7,16 @@
   --foreground: #171717;
 }
 
+/* Light Mode (default) */
+html, body {
+  @apply bg-white text-black;
+}
+
+/* Dark Mode */
+.dark html, .dark body {
+  @apply bg-black text-white;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

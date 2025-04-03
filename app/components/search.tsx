@@ -3,7 +3,8 @@ import CameraButton from "./cameraButton";
 
 export default function Search() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex h-full flex-col items-center flex-1 items-center justify-center">
+
     <main className="w-80 h-80 border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg flex items-center justify-center bg-black-100">
       <Image
         className="w-full h-full object-cover"
