@@ -1,4 +1,4 @@
-name: Full Release Pipeline
+name: Release
 
 on:
   push:
@@ -10,21 +10,43 @@ permissions:
   pull-requests: write
 
 jobs:
+<<<<<<< HEAD
   bump:
+=======
+
+  
+
+  release:
+    name: Run Semantic Release
+>>>>>>> 1e94c2cee2aecc3abb300124583def36918b33b8
     runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.get_tag.outputs.tag }}
+
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
+        
         with:
+<<<<<<< HEAD
           fetch-depth: 0   # ensure all tags & history are present
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'  # match your environment
+=======
+          fetch-depth: 0 # Needed for semantic-release to detect tags
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+>>>>>>> 1e94c2cee2aecc3abb300124583def36918b33b8
 
       - run: yarn install --frozen-lockfile
 
+<<<<<<< HEAD
       # 1️⃣ Calculate next version via dry-run
       - id: calc
         name: Calculate next semantic-release version
@@ -77,20 +99,31 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run semantic-release to create tag
+=======
+        
+      - name: Run tests
+        run: yarn test
+        
+
+      - name: Run semantic-release
+>>>>>>> 1e94c2cee2aecc3abb300124583def36918b33b8
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --no-ci :contentReference[oaicite:3]{index=3}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
 
       - name: Get latest tag
+      
         id: get_tag
         run: |
           git fetch --tags
-          echo "tag_name=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "tag=${latest_tag}" >> $GITHUB_OUTPUT
 
   android-build:
     name: Android Build
+    needs: release
     runs-on: ubuntu-latest
-    needs: tag
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -121,6 +154,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
+
       - name: Rename APK for Release
         run: |
           mv android/app/build/outputs/apk/release/app-release-unsigned.apk \
@@ -129,8 +163,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.tag.outputs.tag_name }}
-          name: Release ${{ needs.tag.outputs.tag_name }}
+          tag_name: ${{ needs.release.outputs.tag_name }}
+          name: Release ${{ needs.release.outputs.tag_name }}
           files: android/app/build/outputs/apk/release/com.iris.app.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
