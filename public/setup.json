@@ -1,7 +1,7 @@
 {
     "cameraButtonColor": "bg-green-500",
     "imageApiUrl": "http://192.168.123.110:5000/search",
-
+    
     "appBackground": "bg-gray-900",
     "cardBackground": "bg-gray-800",
     "textColor": "text-gray-200",
