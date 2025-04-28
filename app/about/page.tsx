@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function About() {
   return (
-    <div className="bg-grey-500 mx-auto max-w-2xl space-y-10 rounded-xl p-8 text-white shadow-md">
+    <div className="bg-grey-500 mx-auto max-w-2xl space-y-10 rounded-xl p-8 text-white shadow-md pt-[30%] pb-[25%]">
       <h1 className="text-2xl font-bold">About This App</h1>
       <p>
         This application was developed under the Open-Source-Software Centre

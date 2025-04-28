@@ -32,7 +32,6 @@ export default function Home() {
           <CameraButton />
         </div>
       </div>
-      <NavigationBar />
     </div>
   );
 }

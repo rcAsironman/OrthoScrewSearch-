@@ -10,7 +10,7 @@ const BottomNav = () => {
       <Link href="/">
         <div className="flex cursor-pointer flex-col items-center text-gray-700">
           <div className={`size-8 rounded-full flex items-center justify-center ${pathname === '/' ? 'bg-black' : ""}`}>
-          <House className={`w-6 h-6 ${pathname === '/' ? 'text-white' : 'text-black'}`}/>
+          <House className={`w-6 h-6 ${pathname === '/'? 'text-white' : 'text-black'}`}/>
           </div>
           <span className="text-xs">Home</span>
         </div>

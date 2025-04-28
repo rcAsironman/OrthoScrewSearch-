@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import NavigationBar from '@/app/components/navigationBar';
 import { AppConfig } from '@/types/config';
 import { StatusBar } from '@capacitor/status-bar';
+import { usePathname } from 'next/navigation';
+import { ShowerHead } from 'lucide-react';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = useState<AppConfig | null>(null);
-
-  
+  const pathname = usePathname();
+  const showNavigation = ["/", "/profile", "/about", "/previousImages"].includes(pathname);
 
   useEffect(() => {
     
@@ -28,9 +30,13 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   
 
   return (
-    <div className={`${config?.appBackground} ${config?.textColor} min-h-screen`}>
-      <NavigationBar />
+    <div className={`${config?.appBackground} ${config?.textColor} min-h-screen`}> 
       {children}
+      {
+        showNavigation && (
+          <NavigationBar/>
+        )
+      }
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { AppConfig } from '@/types/config';
+import { usePathname } from 'next/navigation';
 
 interface SimilarImage {
   src: string;
@@ -102,8 +103,11 @@ function ImageGalleryContent() {
   };
 
   if (!config) return <div className="text-center text-white">Loading config...</div>;
+  const pathname = usePathname();
+  const showHeader = ["/", "/profile", "/about", "/previousImages"].includes(pathname);
 
   return (
+
     <div className={`min-h-screen ${config.appBackground} ${config.textColor}`}>
       <header className={`border-b shadow ${config.borderColor}`}>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -158,6 +162,7 @@ function ImageGalleryContent() {
 }
 
 export default function ImageGallery() {
+
   return (
     <Suspense fallback={<div className="text-center text-white">Loading...</div>}>
 

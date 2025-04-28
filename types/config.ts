@@ -6,6 +6,7 @@ export type AppConfig = {
     textColor: string;
     headingColor: string;
     borderColor: string;
+    primaryColor: string;
     buttonPrimary: string;
     buttonSecondary: string;
 }
