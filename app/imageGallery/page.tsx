@@ -5,13 +5,16 @@ import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { AppConfig } from '@/types/config';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface SimilarImage {
   src: string;
   alt: string;
+  name: string;
 }
 
 function ImageGalleryContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const imageId = searchParams.get('imageId');
 
@@ -32,7 +35,45 @@ function ImageGalleryContent() {
 
   useEffect(() => {
     if (config && imageId) {
-      retrieveImageAndSearch(imageId, config);
+      // Replace IndexedDB/API with dummy stock image data
+      const stockQueriedImage =
+        'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=600&q=80';
+
+        const stockSimilarImages: SimilarImage[] = [
+          {
+            name: 'Mountain Trail',
+            src: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=300&q=80',
+            alt: 'A person hiking on a mountain trail',
+          },
+          {
+            name: 'Forest Path',
+            src: 'https://images.unsplash.com/photo-1550439062-609e1531270e?auto=format&fit=crop&w=300&q=80',
+            alt: 'A peaceful path through dense forest',
+          },
+          {
+            name: 'Sunset Field',
+            src: 'https://images.unsplash.com/photo-1531177077031-69f4d9c85c3f?auto=format&fit=crop&w=300&q=80',
+            alt: 'Golden field at sunset',
+          },
+          {
+            name: 'Foggy Forest',
+            src: 'https://images.unsplash.com/photo-1504203705544-0b3f5c4939e8?auto=format&fit=crop&w=300&q=80',
+            alt: 'Misty trees in a foggy forest',
+          },
+          {
+            name: 'Desert Cliff',
+            src: 'https://images.unsplash.com/photo-1559589689-577aabd1b82e?auto=format&fit=crop&w=300&q=80',
+            alt: 'Cliffside in a rocky desert area',
+          },
+        ];
+        
+
+      setLoading(true);
+      setTimeout(() => {
+        setImageData(stockQueriedImage);
+        setSimilarImages(stockSimilarImages);
+        setLoading(false);
+      }, 1000);
     }
   }, [imageId, config]);
 
@@ -139,13 +180,14 @@ function ImageGalleryContent() {
               <h2 className={`mb-4 ml-4 text-xl font-semibold ${config.headingColor}`}>
                 Similar Images
               </h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-4 px-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {similarImages.map((image) => (
                   <img
-                    key={image.src}
-                    src={image.src}
-                    alt={image.alt}
-                    className={`h-40 w-full rounded-md object-cover ${config.cardBackground}`}
+                  key={image.src}
+                  src={image.src}
+                  alt={image.alt}
+                  className={`h-40 w-full rounded-md object-cover ${config.cardBackground} cursor-pointer`}
+                  onClick={() => router.push(`/imageGallery/${encodeURIComponent(image.name)}`)}
                   />
                 ))}
               </div>

@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { AppConfig } from '@/types/config';
 
 interface SimilarImage {
   src: string;
@@ -56,28 +57,35 @@ export default function ImageDetailPage() {
 
   const [image, setImage] = useState(dummyImage);
   const [similarImages, setSimilarImages] = useState<SimilarImage[]>([]);
+  const [config, setConfig] = useState<AppConfig | null>(null);
 
+  // Load theme config
+  useEffect(() => {
+    fetch('/setup.json')
+      .then((res) => res.json())
+      .then(setConfig)
+      .catch((err) => console.error('Error loading config:', err));
+  }, []);
+
+  // Load current image + similar
   useEffect(() => {
     if (imageId) {
-      const decodedId = decodeURIComponent(imageId as string);
-      const match = dummySimilarImages.find((img) => img.src === decodedId);
-      if (match) {
-        setImage({ src: match.src, name: match.name, accuracy: match.accuracy });
-      } else {
-        setImage(dummyImage);
-      }
-
-      setSimilarImages(dummySimilarImages.filter((img) => img.src !== decodedId));
+      const decoded = decodeURIComponent(imageId as string);
+      const match = dummySimilarImages.find((img) => img.name === decoded);
+      setImage(match || dummyImage);
+      setSimilarImages(dummySimilarImages.filter((img) => img.name !== decoded));
     }
   }, [imageId]);
 
+  if (!config) return <div className="text-center text-white">Loading config...</div>;
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 px-6 py-6">
+    <div className={`min-h-screen px-6 py-6 ${config.appBackground} ${config.textColor}`}>
       {/* Back Button */}
       <div className="mb-6">
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 border border-gray-300 text-sm font-medium hover:bg-gray-100 transition"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -85,14 +93,16 @@ export default function ImageDetailPage() {
       </div>
 
       {/* Title */}
-      <h1 className="text-3xl font-semibold mb-6 text-center tracking-tight">Image Details</h1>
+      <h1 className={`text-3xl font-semibold mb-6 text-center tracking-tight ${config.headingColor}`}>
+        Image Details
+      </h1>
 
-      {/* Queried image */}
+      {/* Queried Image */}
       <div className="w-full aspect-video overflow-hidden rounded-2xl shadow-md bg-gray-100 mb-6">
         <img src={image.src} alt={image.name} className="w-full h-full object-cover" />
       </div>
 
-      {/* Details */}
+      {/* Image Info */}
       <div className="mb-12 text-center">
         <p className="text-lg font-medium">
           <span className="text-gray-700">Name:</span> {image.name}
@@ -103,12 +113,12 @@ export default function ImageDetailPage() {
       </div>
 
       {/* Similar Images */}
-      <h2 className="text-2xl font-semibold mb-4 mt-12">Similar Images</h2>
+      <h2 className={`text-2xl font-semibold mb-4 mt-12 ${config.headingColor}`}>Similar Images</h2>
       <div className="flex overflow-x-auto space-x-6 pb-4">
         {similarImages.map((img) => (
           <div
             key={img.src}
-            className="flex-shrink-0 w-56 rounded-xl bg-white shadow hover:shadow-lg transition-shadow duration-300 border border-gray-200"
+            className={`flex-shrink-0 w-56 rounded-xl shadow hover:shadow-lg transition-shadow duration-300 border border-gray-200 ${config.cardBackground}`}
           >
             <img
               src={img.src}
