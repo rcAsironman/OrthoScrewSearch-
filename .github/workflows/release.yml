@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  
+
+  release:
+    name: Run Semantic Release
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.get_tag.outputs.tag }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        
+        with:
+          fetch-depth: 0 # Needed for semantic-release to detect tags
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+        
+      - name: Run tests
+        run: yarn test
+        
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
+
+      - name: Get latest tag
+      
+        id: get_tag
+        run: |
+          git fetch --tags
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "tag=${latest_tag}" >> $GITHUB_OUTPUT
+
+  android-build:
+    name: Android Build
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Web
+        run: yarn build
+
+      - name: Capacitor sync
+        run: yarn cap sync android
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+
+      - name: Rename APK for Release
+        run: |
+          mv android/app/build/outputs/apk/release/app-release-unsigned.apk \
+             android/app/build/outputs/apk/release/com.iris.app.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.release.outputs.tag_name }}
+          name: Release ${{ needs.release.outputs.tag_name }}
+          files: android/app/build/outputs/apk/release/com.iris.app.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
